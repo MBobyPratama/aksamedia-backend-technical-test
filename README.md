@@ -365,7 +365,7 @@ Proyek ini dibuat untuk technical test, namun saran dan masukan sangat diterima 
 
 - **Developer**: Muhammad Boby Pratama
 - **Email**: [bobypratama.dev@gmail.com](mailto:bobypratama.dev@gmail.com)
-- **LinkedIn**: [Muhammad Boby Pratama](www.linkedin.com/in/muhammad-boby-pratama)
+- **LinkedIn**: [Muhammad Boby Pratama](https://www.linkedin.com/in/muhammad-boby-pratama/)
 - **GitHub**: [MBobyPratama](https://github.com/MBobyPratama)
 
 ## 📄 Lisensi
