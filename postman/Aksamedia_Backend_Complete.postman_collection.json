@@ -1,0 +1,760 @@
+{
+	"info": {
+		"_postman_id": "aksamedia-backend-2025",
+		"name": "🚀 Aksamedia Backend API - Complete Collection",
+		"description": "📋 **API Collection untuk Technical Test Backend Developer Intern**\n**PT Aksamedia Mulia Digital**\n\n## 🔐 Authentication\nSebagian besar endpoint memerlukan autentikasi menggunakan Bearer token. Login terlebih dahulu untuk mendapatkan token, kemudian gunakan di header Authorization.\n\n## 👨‍💼 Default Admin Credentials\n- **Username:** `admin`\n- **Password:** `pastibisa`\n\n## 🌐 Base URL\n`http://127.0.0.1:8000/api`\n\n## ✨ Features\n- ✅ User authentication dengan token-based system\n- ✅ Division management dengan filter dan pagination\n- ✅ Employee CRUD operations dengan image upload\n- ✅ Filtering dan pagination support\n- ✅ Automatic token management\n- ✅ Comprehensive error handling\n\n## 📖 How to Use\n1. **Import Collection:** Import file ini ke Postman\n2. **Set Environment:** Set environment variable `base_url` ke `http://127.0.0.1:8000/api`\n3. **Login:** Gunakan endpoint Login untuk mendapatkan token\n4. **Auto Token:** Token akan otomatis tersimpan di environment variable `auth_token`\n5. **Test APIs:** Gunakan endpoint lain untuk testing\n\n## 🛠️ Development Notes\n- Menggunakan Laravel 11 dengan Laravel Sanctum\n- Database menggunakan UUID untuk primary keys\n- File upload maksimal 2MB dengan validasi format\n- Semua endpoint memiliki proper validation dan error handling",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "aksamedia-2025"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test login success",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success status', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"});",
+									"",
+									"pm.test('Response has token', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.token).to.exist;",
+									"    ",
+									"    // Save token for other requests",
+									"    pm.environment.set('auth_token', jsonData.data.token);",
+									"    console.log('✅ Token berhasil disimpan:', jsonData.data.token.substring(0, 20) + '...');",
+									"});",
+									"",
+									"pm.test('Response has admin data', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.admin).to.exist;",
+									"    pm.expect(jsonData.data.admin.username).to.eql('admin');",
+									"    pm.expect(jsonData.data.admin.name).to.exist;",
+									"    pm.expect(jsonData.data.admin.email).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"pastibisa\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "🔑 **Login Admin Endpoint**\n\n**Method:** POST\n**URL:** `/api/login`\n\n**Default Credentials:**\n- Username: `admin`\n- Password: `pastibisa`\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Login berhasil\",\n    \"data\": {\n        \"token\": \"bearer-token-here\",\n        \"admin\": {\n            \"id\": \"uuid\",\n            \"name\": \"Administrator\",\n            \"username\": \"admin\",\n            \"phone\": \"08123456789\",\n            \"email\": \"admin@aksamedia.com\"\n        }\n    }\n}\n```\n\n**Auto Actions:**\n- ✅ Token otomatis disimpan ke environment variable `auth_token`\n- ✅ Auto validation untuk response structure\n- ✅ Console log untuk debugging"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Logout successful', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData.message).to.include('Logout berhasil');",
+									"    ",
+									"    // Clear token from environment",
+									"    pm.environment.unset('auth_token');",
+									"    console.log('✅ Token berhasil dihapus dari environment');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "🚪 **Logout Endpoint**\n\n**Method:** POST\n**URL:** `/api/logout`\n**Auth:** Bearer Token Required\n\n**Description:**\nEndpoint untuk logout dan menghapus token akses dari server.\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Logout berhasil\"\n}\n```\n\n**Auto Actions:**\n- ✅ Token otomatis dihapus dari environment variable\n- ✅ Validation untuk response structure"
+					},
+					"response": []
+				}
+			],
+			"description": "🔐 **Authentication Endpoints**\n\nFolder ini berisi endpoint untuk autentikasi:\n- Login: Mendapatkan bearer token\n- Logout: Menghapus token akses\n\n**Important Notes:**\n- Token akan otomatis disimpan/dihapus dari environment\n- Semua endpoint lain memerlukan authentication header\n- Token format: `Bearer {token}`"
+		},
+		{
+			"name": "📋 Divisions",
+			"item": [
+				{
+					"name": "Get All Divisions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has divisions data', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData.data.divisions).to.be.an('array');",
+									"    pm.expect(jsonData.pagination).to.exist;",
+									"});",
+									"",
+									"pm.test('Pagination structure is correct', function () {",
+									"    var jsonData = pm.response.json();",
+									"    var pagination = jsonData.pagination;",
+									"    pm.expect(pagination.current_page).to.exist;",
+									"    pm.expect(pagination.per_page).to.exist;",
+									"    pm.expect(pagination.total).to.exist;",
+									"    pm.expect(pagination.last_page).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/divisions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"divisions"
+							]
+						},
+						"description": "📋 **Get All Divisions**\n\n**Method:** GET\n**URL:** `/api/divisions`\n**Auth:** Bearer Token Required\n\n**Description:**\nMengambil semua data divisi dengan pagination.\n\n**Available Divisions:**\n- Mobile Apps\n- QA  \n- Full Stack\n- Backend\n- Frontend\n- UI/UX Designer\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Data divisi berhasil diambil\",\n    \"data\": {\n        \"divisions\": [\n            {\n                \"id\": \"uuid\",\n                \"name\": \"Backend\",\n                \"created_at\": \"2025-01-01T00:00:00.000000Z\",\n                \"updated_at\": \"2025-01-01T00:00:00.000000Z\"\n            }\n        ]\n    },\n    \"pagination\": {\n        \"current_page\": 1,\n        \"per_page\": 10,\n        \"total\": 6,\n        \"last_page\": 1,\n        \"from\": 1,\n        \"to\": 6,\n        \"has_more_pages\": false\n    }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Divisions with Name Filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Filtered results contain search term', function () {",
+									"    var jsonData = pm.response.json();",
+									"    var divisions = jsonData.data.divisions;",
+									"    ",
+									"    if (divisions.length > 0) {",
+									"        divisions.forEach(function(division) {",
+									"            pm.expect(division.name.toLowerCase()).to.include('backend');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/divisions?name=Backend",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"divisions"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Backend",
+									"description": "Filter divisi berdasarkan nama (case-insensitive)"
+								}
+							]
+						},
+						"description": "🔍 **Get Divisions with Name Filter**\n\n**Method:** GET\n**URL:** `/api/divisions?name=Backend`\n**Auth:** Bearer Token Required\n\n**Query Parameters:**\n- `name` (optional): Filter divisi berdasarkan nama (case-insensitive)\n\n**Example Usage:**\n- `?name=Backend` → Mencari divisi yang mengandung kata \"Backend\"\n- `?name=Mobile` → Mencari divisi yang mengandung kata \"Mobile\"\n- `?name=UI` → Mencari divisi yang mengandung kata \"UI\"\n\n**Response:**\nSama seperti Get All Divisions, tetapi hasil sudah difilter sesuai nama yang dicari."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Divisions with Pagination",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/divisions?page=1&name=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"divisions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Halaman yang ingin diambil"
+								},
+								{
+									"key": "name",
+									"value": "",
+									"description": "Filter berdasarkan nama (kosongkan jika tidak ingin filter)"
+								}
+							]
+						},
+						"description": "📄 **Get Divisions with Pagination**\n\n**Method:** GET\n**URL:** `/api/divisions?page=1`\n**Auth:** Bearer Token Required\n\n**Query Parameters:**\n- `page` (optional): Halaman yang ingin diambil (default: 1)\n- `name` (optional): Filter berdasarkan nama divisi\n\n**Pagination Info:**\n- Per page: 10 items\n- Total available divisions: 6\n- Pagination structure included in response\n\n**Combined Usage:**\n`/divisions?page=1&name=Backend` → Halaman 1 dengan filter \"Backend\""
+					},
+					"response": []
+				}
+			],
+			"description": "📋 **Divisions Management**\n\nFolder ini berisi endpoint untuk manajemen divisi:\n- Get All Divisions: Mengambil semua divisi\n- Filter by Name: Pencarian divisi berdasarkan nama\n- Pagination: Navigasi halaman data\n\n**Available Divisions:**\n1. Mobile Apps\n2. QA\n3. Full Stack\n4. Backend\n5. Frontend\n6. UI/UX Designer\n\n**Features:**\n- ✅ Pagination (10 items per page)\n- ✅ Name filtering (case-insensitive)\n- ✅ Comprehensive response structure"
+		},
+		{
+			"name": "👥 Employees",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has employees data', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData.data.employees).to.be.an('array');",
+									"    pm.expect(jsonData.pagination).to.exist;",
+									"});",
+									"",
+									"pm.test('Employee structure is correct', function () {",
+									"    var jsonData = pm.response.json();",
+									"    var employees = jsonData.data.employees;",
+									"    ",
+									"    if (employees.length > 0) {",
+									"        var employee = employees[0];",
+									"        pm.expect(employee.id).to.exist;",
+									"        pm.expect(employee.name).to.exist;",
+									"        pm.expect(employee.phone).to.exist;",
+									"        pm.expect(employee.position).to.exist;",
+									"        pm.expect(employee.division).to.exist;",
+									"        pm.expect(employee.division.name).to.exist;",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
+						},
+						"description": "👥 **Get All Employees**\n\n**Method:** GET\n**URL:** `/api/employees`\n**Auth:** Bearer Token Required\n\n**Description:**\nMengambil semua data karyawan dengan relasi divisi dan pagination.\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Data karyawan berhasil diambil\",\n    \"data\": {\n        \"employees\": [\n            {\n                \"id\": \"uuid\",\n                \"image\": \"http://127.0.0.1:8000/storage/employees/image.jpg\",\n                \"name\": \"John Doe\",\n                \"phone\": \"08123456789\",\n                \"position\": \"Software Engineer\",\n                \"division\": {\n                    \"id\": \"uuid\",\n                    \"name\": \"Backend\"\n                }\n            }\n        ]\n    },\n    \"pagination\": {\n        \"current_page\": 1,\n        \"per_page\": 10,\n        \"total\": 0,\n        \"last_page\": 1,\n        \"from\": null,\n        \"to\": null,\n        \"has_more_pages\": false\n    }\n}\n```\n\n**Features:**\n- ✅ Includes division relationship\n- ✅ Full image URL for uploaded photos\n- ✅ Pagination support\n- ✅ UUID-based IDs for security"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employees with Name Filter",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees?name=John",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "John",
+									"description": "Filter karyawan berdasarkan nama (case-insensitive)"
+								}
+							]
+						},
+						"description": "🔍 **Get Employees with Name Filter**\n\n**Method:** GET\n**URL:** `/api/employees?name=John`\n**Auth:** Bearer Token Required\n\n**Query Parameters:**\n- `name` (optional): Filter karyawan berdasarkan nama (case-insensitive)\n\n**Example Usage:**\n- `?name=John` → Mencari karyawan yang mengandung kata \"John\"\n- `?name=Doe` → Mencari karyawan yang mengandung kata \"Doe\"\n- `?name=Jane` → Mencari karyawan yang mengandung kata \"Jane\"\n\n**Response:**\nSama seperti Get All Employees, tetapi hasil sudah difilter sesuai nama yang dicari."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employees with Division Filter",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees?division_id=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "division_id",
+									"value": "",
+									"description": "Filter karyawan berdasarkan divisi (ganti dengan UUID divisi yang valid)"
+								}
+							]
+						},
+						"description": "🏢 **Get Employees with Division Filter**\n\n**Method:** GET\n**URL:** `/api/employees?division_id=uuid`\n**Auth:** Bearer Token Required\n\n**Query Parameters:**\n- `division_id` (optional): Filter karyawan berdasarkan divisi (UUID)\n\n**How to Use:**\n1. Dapatkan division ID dari endpoint `/divisions`\n2. Copy UUID dari divisi yang diinginkan\n3. Paste ke query parameter `division_id`\n\n**Example:**\n`/employees?division_id=123e4567-e89b-12d3-a456-426614174000`\n\n**Response:**\nSama seperti Get All Employees, tetapi hasil sudah difilter sesuai divisi yang dipilih."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employees with Combined Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees?name=John&division_id=&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "John",
+									"description": "Filter berdasarkan nama"
+								},
+								{
+									"key": "division_id",
+									"value": "",
+									"description": "Filter berdasarkan divisi (UUID)"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Halaman pagination"
+								}
+							]
+						},
+						"description": "🔍🏢 **Get Employees with Combined Filters**\n\n**Method:** GET\n**URL:** `/api/employees?name=John&division_id=uuid&page=1`\n**Auth:** Bearer Token Required\n\n**Query Parameters:**\n- `name` (optional): Filter berdasarkan nama karyawan\n- `division_id` (optional): Filter berdasarkan divisi (UUID)\n- `page` (optional): Halaman pagination\n\n**Advanced Usage:**\n- Kombinasi filter nama dan divisi\n- Pencarian yang lebih spesifik\n- Pagination untuk hasil yang banyak\n\n**Example:**\n`/employees?name=John&division_id=123e4567-e89b-12d3-a456-426614174000&page=1`\n\n**Response:**\nResults yang sudah difilter berdasarkan nama DAN divisi secara bersamaan."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Employee created successfully', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData.message).to.include('berhasil dibuat');",
+									"    pm.expect(jsonData.data.employee).to.exist;",
+									"    pm.expect(jsonData.data.employee.id).to.exist;",
+									"    ",
+									"    // Save employee ID for update/delete operations",
+									"    pm.environment.set('employee_id', jsonData.data.employee.id);",
+									"    console.log('✅ Employee ID saved:', jsonData.data.employee.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "John Doe",
+									"type": "text",
+									"description": "Nama lengkap karyawan (required)"
+								},
+								{
+									"key": "phone",
+									"value": "08123456789",
+									"type": "text",
+									"description": "Nomor telepon karyawan (required)"
+								},
+								{
+									"key": "division_id",
+									"value": "",
+									"type": "text",
+									"description": "UUID divisi (required) - dapatkan dari endpoint /divisions"
+								},
+								{
+									"key": "position",
+									"value": "Software Engineer",
+									"type": "text",
+									"description": "Posisi/jabatan karyawan (required)"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"description": "Foto karyawan (optional, max 2MB, formats: jpg, jpeg, png, gif)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
+						},
+						"description": "➕ **Create Employee**\n\n**Method:** POST\n**URL:** `/api/employees`\n**Auth:** Bearer Token Required\n**Content-Type:** multipart/form-data\n\n**Required Fields:**\n- `name`: Nama lengkap karyawan\n- `phone`: Nomor telepon karyawan\n- `division_id`: UUID divisi (dari endpoint /divisions)\n- `position`: Posisi/jabatan karyawan\n\n**Optional Fields:**\n- `image`: Foto karyawan (max 2MB, formats: jpg, jpeg, png, gif)\n\n**Validation Rules:**\n- Name: required, string, max 255 chars\n- Phone: required, string, max 20 chars\n- Division ID: required, must exist in divisions table\n- Position: required, string, max 100 chars\n- Image: optional, file, max 2MB, image formats only\n\n**Steps to Create:**\n1. Get division ID from `/divisions` endpoint\n2. Fill required fields in form-data\n3. Optionally upload image file\n4. Submit request\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Karyawan berhasil dibuat\",\n    \"data\": {\n        \"employee\": {\n            \"id\": \"uuid\",\n            \"image\": \"http://127.0.0.1:8000/storage/employees/image.jpg\",\n            \"name\": \"John Doe\",\n            \"phone\": \"08123456789\",\n            \"position\": \"Software Engineer\",\n            \"division\": {\n                \"id\": \"uuid\",\n                \"name\": \"Backend\"\n            }\n        }\n    }\n}\n```\n\n**Auto Actions:**\n- ✅ Employee ID otomatis disimpan ke environment variable `employee_id`\n- ✅ Validation untuk response structure\n- ✅ Image upload handling"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Employee updated successfully', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData.message).to.include('berhasil diupdate');",
+									"    pm.expect(jsonData.data.employee).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Jane Smith Updated",
+									"type": "text",
+									"description": "Nama lengkap karyawan (required)"
+								},
+								{
+									"key": "phone",
+									"value": "08123456790",
+									"type": "text",
+									"description": "Nomor telepon karyawan (required)"
+								},
+								{
+									"key": "division_id",
+									"value": "",
+									"type": "text",
+									"description": "UUID divisi (required) - dapatkan dari endpoint /divisions"
+								},
+								{
+									"key": "position",
+									"value": "Senior Software Engineer",
+									"type": "text",
+									"description": "Posisi/jabatan karyawan (required)"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"description": "Foto karyawan baru (optional, max 2MB, formats: jpg, jpeg, png, gif)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/employees/{{employee_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"{{employee_id}}"
+							]
+						},
+						"description": "✏️ **Update Employee**\n\n**Method:** PUT\n**URL:** `/api/employees/{employee_id}`\n**Auth:** Bearer Token Required\n**Content-Type:** multipart/form-data\n\n**Required Fields:**\n- `name`: Nama lengkap karyawan\n- `phone`: Nomor telepon karyawan\n- `division_id`: UUID divisi (dari endpoint /divisions)\n- `position`: Posisi/jabatan karyawan\n\n**Optional Fields:**\n- `image`: Foto karyawan baru (max 2MB, formats: jpg, jpeg, png, gif)\n\n**URL Parameter:**\n- `employee_id`: UUID karyawan yang akan diupdate\n\n**How to Use:**\n1. Create employee first or get employee ID from list\n2. Replace `{{employee_id}}` with actual employee UUID\n3. Fill required fields with new values\n4. Optionally upload new image file\n5. Submit request\n\n**Image Update Behavior:**\n- Jika image baru diupload, image lama akan dihapus otomatis\n- Jika tidak upload image baru, image lama tetap dipertahankan\n- Image handling with automatic cleanup\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Karyawan berhasil diupdate\",\n    \"data\": {\n        \"employee\": {\n            \"id\": \"uuid\",\n            \"image\": \"http://127.0.0.1:8000/storage/employees/new-image.jpg\",\n            \"name\": \"Jane Smith Updated\",\n            \"phone\": \"08123456790\",\n            \"position\": \"Senior Software Engineer\",\n            \"division\": {\n                \"id\": \"uuid\",\n                \"name\": \"Backend\"\n            }\n        }\n    }\n}\n```\n\n**Auto Actions:**\n- ✅ Uses environment variable `employee_id` if available\n- ✅ Validation untuk response structure\n- ✅ Image upload and cleanup handling"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Employee deleted successfully', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('success');",
+									"    pm.expect(jsonData.message).to.include('berhasil dihapus');",
+									"    ",
+									"    // Clear employee ID from environment",
+									"    pm.environment.unset('employee_id');",
+									"    console.log('✅ Employee ID cleared from environment');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees/{{employee_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"{{employee_id}}"
+							]
+						},
+						"description": "🗑️ **Delete Employee**\n\n**Method:** DELETE\n**URL:** `/api/employees/{employee_id}`\n**Auth:** Bearer Token Required\n\n**URL Parameter:**\n- `employee_id`: UUID karyawan yang akan dihapus\n\n**Description:**\nEndpoint untuk menghapus data karyawan dari sistem.\n\n**Important Notes:**\n- Soft delete tidak diimplementasikan (permanent delete)\n- Image file akan ikut terhapus dari storage\n- Relasi dengan divisi akan terputus\n- Action ini tidak dapat di-undo\n\n**How to Use:**\n1. Get employee ID from create/list endpoint\n2. Replace `{{employee_id}}` with actual employee UUID\n3. Submit DELETE request\n4. Employee will be permanently removed\n\n**Response:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Karyawan berhasil dihapus\"\n}\n```\n\n**Auto Actions:**\n- ✅ Uses environment variable `employee_id` if available\n- ✅ Employee ID cleared from environment after deletion\n- ✅ Validation untuk response structure\n- ✅ Image file cleanup"
+					},
+					"response": []
+				}
+			],
+			"description": "👥 **Employee Management**\n\nFolder ini berisi endpoint untuk manajemen karyawan (CRUD operations):\n\n**Read Operations:**\n- Get All Employees: Mengambil semua karyawan\n- Filter by Name: Pencarian berdasarkan nama\n- Filter by Division: Pencarian berdasarkan divisi\n- Combined Filters: Kombinasi filter nama dan divisi\n\n**Write Operations:**\n- Create Employee: Membuat karyawan baru\n- Update Employee: Memperbarui data karyawan\n- Delete Employee: Menghapus karyawan\n\n**Features:**\n- ✅ Complete CRUD operations\n- ✅ File upload for employee photos\n- ✅ Multiple filter options\n- ✅ Pagination support\n- ✅ Automatic image cleanup\n- ✅ UUID-based security\n- ✅ Relationship with divisions\n- ✅ Comprehensive validation\n\n**Auto Environment Variables:**\n- `employee_id`: Automatically saved after create, used for update/delete\n- `auth_token`: Required for all operations\n\n**Data Structure:**\n```json\n{\n    \"id\": \"uuid\",\n    \"image\": \"full-url-to-image\",\n    \"name\": \"Employee Name\",\n    \"phone\": \"Phone Number\",\n    \"position\": \"Job Position\",\n    \"division\": {\n        \"id\": \"uuid\",\n        \"name\": \"Division Name\"\n    }\n}\n```"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script",
+					"console.log('📡 Request:', pm.request.method, pm.request.url.toString());",
+					"",
+					"// Check if auth token exists for protected routes",
+					"if (pm.request.url.path && pm.request.url.path.length > 0) {",
+					"    const endpoint = pm.request.url.path.join('/');",
+					"    if (endpoint !== 'login' && pm.request.method !== 'GET') {",
+					"        const token = pm.environment.get('auth_token');",
+					"        if (!token) {",
+					"            console.warn('⚠️ No auth token found. Please login first.');",
+					"        } else {",
+					"            console.log('✅ Auth token found:', token.substring(0, 20) + '...');",
+					"        }",
+					"    }",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"console.log('📨 Response:', pm.response.code, pm.response.status);",
+					"console.log('⏱️ Response Time:', pm.response.responseTime + 'ms');",
+					"",
+					"// Log response for debugging",
+					"if (pm.response.code !== 200 && pm.response.code !== 201) {",
+					"    console.error('❌ Error Response:', pm.response.json());",
+					"} else {",
+					"    console.log('✅ Success Response');",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "employee_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
